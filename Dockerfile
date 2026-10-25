@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 2. Copia l'applicazione (incluso sentiment_analysis_model.pkl se è dentro la cartella app/)
 COPY app ./app
+COPY tests ./tests
 
 EXPOSE 8000
 
