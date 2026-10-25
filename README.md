@@ -21,7 +21,7 @@
        -d '{"review": "This product is amazing! I love it."}'
      ```
    - Metriche: `curl http://localhost:8000/metrics`
-   - Grafana UI: `http://localhost:3000` (admin/vetrinia)
+   - Grafana UI: `http://localhost:3000` (admin/admin)
    - Prometheus UI: `http://localhost:9090`
 
 ## Esecuzione Test

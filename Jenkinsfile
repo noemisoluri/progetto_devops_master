@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()
+    }
+
     environment {
         REGISTRY = 'ghcr.io'
         IMAGE_NAME = 'noemisoluri/sentiment-service'
@@ -11,27 +15,25 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                echo 'Download del codice sorgente dal repository GitHub...'
                 checkout scms
-            }
-        }
-
-        stage('Test Automatici') {
-            steps {
-                echo 'Esecuzione dei test Pytest...'
-                sh '''
-                    python3 -m venv venv || python -m venv venv
-                    . venv/bin/activate || ./venv/Scripts/activate
-                    pip install --no-cache-dir -r requirements.txt
-                    pytest tests/ -v
-                '''
             }
         }
 
         stage('Docker Build') {
             steps {
-                echo "Compilazione immagine Docker..."
+                echo "Compilazione dell'immagine Docker (Tag: ${IMAGE_TAG} e latest)..."
                 sh """
                     docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -t ${REGISTRY}/${IMAGE_NAME}:latest .
+                """
+            }
+        }
+
+        stage('Test Automatici') {
+            steps {
+                echo 'Esecuzione dei test Pytest all\'interno del container...'
+                sh """
+                    docker run --rm ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} pytest tests/ -v
                 """
             }
         }
@@ -50,14 +52,14 @@ pipeline {
 
     post {
         always {
-            echo "Pulizia dell'ambiente di build..."
+            echo "Esecuzione logout dal registry Docker..."
             sh "docker logout ${REGISTRY} || true"
         }
         success {
-            echo "Pipeline completata con successo! Nuova immagine pubblicata: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Pipeline completata con successo! Nuova immagine rilasciata su GHCR: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
         }
         failure {
-            echo "Errore durante l'esecuzione della pipeline. Controllare i log dello stage fallito."
+            echo "Build fallita. Controllare i log dello stage fallito per i dettagli dell'errore."
         }
     }
 }
