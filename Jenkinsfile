@@ -16,7 +16,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Download del codice sorgente dal repository GitHub...'
-                checkout scms
+                checkout scm
             }
         }
 
