@@ -6,6 +6,7 @@
 - `docker-compose.yml`: Ambiente completo locale (App, Prometheus, cAdvisor, Grafana)
 - `Jenkinsfile`: Pipeline CI/CD declarativa completa
 
+
 ## Quickstart Locale
 
 1. **Avvio dello stack:**
