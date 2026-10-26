@@ -91,3 +91,4 @@ asyncio - 25/10/2026 22:10:04 - Using selector: SelectSelector
  watchfiles.main - 25/10/2026 22:24:51 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\noemi\\Downloads\\sentiment-service-vetrinia\\progetto_modulo_deploy\\app\\audit.log')}
  watchfiles.main - 25/10/2026 22:25:48 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\noemi\\Downloads\\sentiment-service-vetrinia\\progetto_modulo_deploy\\app\\audit.log')}
  watchfiles.main - 25/10/2026 22:25:49 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\noemi\\Downloads\\sentiment-service-vetrinia\\progetto_modulo_deploy\\app\\audit.log')}
+ watchfiles.main - 25/10/2026 22:26:17 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\noemi\\Downloads\\sentiment-service-vetrinia\\progetto_modulo_deploy\\app\\audit.log')}

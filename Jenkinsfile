@@ -6,10 +6,10 @@ pipeline {
     }
 
     environment {
-        REGISTRY = 'ghcr.io'
-        IMAGE_NAME = 'noemisoluri/sentiment-service'
+        IMAGE_NAME = 'sentiment-service'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
-        CR_PAT_CREDENTIALS = credentials('ghcr-credentials')
+        CONTAINER_NAME = 'sentiment-service'
+        DOCKER_NETWORK = 'progetto_devops_master_default'
     }
 
     stages {
@@ -22,44 +22,48 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                echo "Compilazione dell'immagine Docker (Tag: ${IMAGE_TAG} e latest)..."
+                echo "Compilazione dell'immagine Docker in locale (${IMAGE_NAME}:latest)..."
                 sh """
-                    docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -t ${REGISTRY}/${IMAGE_NAME}:latest .
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest .
                 """
             }
         }
 
         stage('Test Automatici') {
             steps {
-                echo 'Esecuzione dei test Pytest all\'interno del container...'
+                echo 'Esecuzione dei test Pytest nel container...'
                 sh """
-                    docker run --rm ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} pytest tests/ -v
+                    docker run --rm -e PYTHONPATH=/app ${IMAGE_NAME}:latest pytest tests/ -v
                 """
             }
         }
 
-        stage('Docker Push') {
+        stage('Deploy') {
             steps {
-                echo "Autenticazione e push su GitHub Container Registry..."
+                echo 'Avvio del container sentiment-service...'
                 sh """
-                    echo \$CR_PAT_CREDENTIALS_PSW | docker login ${REGISTRY} -u \$CR_PAT_CREDENTIALS_USR --password-stdin
-                    docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
-                    docker push ${REGISTRY}/${IMAGE_NAME}:latest
+                    # Ferma e rimuove il vecchio container se già in esecuzione
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+
+                    # Avvia il nuovo container collegandolo alla rete del compose e esponendo la porta 8000
+                    docker run -d \
+                      --name ${CONTAINER_NAME} \
+                      --network ${DOCKER_NETWORK} \
+                      -p 8000:8000 \
+                      --restart unless-stopped \
+                      ${IMAGE_NAME}:latest
                 """
             }
         }
     }
 
     post {
-        always {
-            echo "Esecuzione logout dal registry Docker..."
-            sh "docker logout ${REGISTRY} || true"
-        }
         success {
-            echo "Pipeline completata con successo! Nuova immagine rilasciata su GHCR: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Pipeline completata! Container ${CONTAINER_NAME} avviato e raggiungibile su porta 8000."
         }
         failure {
-            echo "Build fallita. Controllare i log dello stage fallito per i dettagli dell'errore."
+            echo "Pipeline fallita. Controllare i log dello stage interessato."
         }
     }
 }
