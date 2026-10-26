@@ -3,7 +3,8 @@ import os
 import pickle
 import time
 from fastapi import FastAPI, HTTPException, Response, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, 
+import tempfile
 import uvicorn
 
 
