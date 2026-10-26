@@ -1,12 +1,12 @@
 import logging
 import os
 import pickle
+import tempfile  
 import time
 from fastapi import FastAPI, HTTPException, Response, status
-from pydantic import BaseModel
-import tempfile
+from pydantic import BaseModel, Field
+from prometheus_client import Counter, Histogram, CONTENT_TYPE_LATEST, generate_latest
 import uvicorn
-
 
 os.environ["PROMETHEUS_MULTIPROC_DIR"] = tempfile.mkdtemp()
 from prometheus_client import CollectorRegistry, generate_latest, multiprocess, CONTENT_TYPE_LATEST
