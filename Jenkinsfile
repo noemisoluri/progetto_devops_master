@@ -46,10 +46,8 @@ pipeline {
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
 
-                    # Avvia il nuovo container collegandolo alla rete del compose e esponendo la porta 8000
                     docker run -d \
                       --name ${CONTAINER_NAME} \
-                      --network ${DOCKER_NETWORK} \
                       -p 8000:8000 \
                       --restart unless-stopped \
                       ${IMAGE_NAME}:latest
