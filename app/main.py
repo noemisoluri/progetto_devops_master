@@ -1,16 +1,11 @@
 import logging
 import os
 import pickle
-import tempfile  
 import time
 from fastapi import FastAPI, HTTPException, Response, status
 from pydantic import BaseModel, Field
-from prometheus_client import Counter, Histogram, CONTENT_TYPE_LATEST, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST,REGISTRY, Counter, Histogram,generate_latest,
 import uvicorn
-
-os.environ["PROMETHEUS_MULTIPROC_DIR"] = tempfile.mkdtemp()
-from prometheus_client import CollectorRegistry, generate_latest, multiprocess, CONTENT_TYPE_LATEST
-
 
 # Configurazione logging
 logging.basicConfig(
@@ -127,9 +122,8 @@ def predict_sentiment(body: PredictBody):
 
 @app.get("/metrics", tags=["Monitoring"])
 def get_metrics():
-    registry = CollectorRegistry()
-    multiprocess.MultiProcessCollector(registry)
-    return Response(content=generate_latest(registry), media_type=CONTENT_TYPE_LATEST)
+    """Endpoint per lo scrape delle metriche da parte di Prometheus."""
+    return Response(content=generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
