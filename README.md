@@ -1,5 +1,5 @@
 ## Struttura del Progetto
-- `app/`: Servizio FastAPI con endpoint `/predict` e `/metrics`
+- `app/`: Servizio FastAPI con endpoint `/predict`, `/metrics` e `/healthz`
 - `monitoring/`: Configurazione di Prometheus e metriche dei container
 - `tests/`: Test unitari e di integrazione (Pytest)
 - `Dockerfile`: Immagine Docker multi-stage per produzione
@@ -24,6 +24,8 @@
    - Metriche: `curl http://localhost:8000/metrics`
    - Grafana UI: `http://localhost:3000` (admin/admin)
    - Prometheus UI: `http://localhost:9090`
+  
+  Per testare gli endpoint esposti dall'applicazione è possibile anche consultare lo swagger presente alla pagina http://localhost:8000/docs.
 
 ## Esecuzione Test
 
