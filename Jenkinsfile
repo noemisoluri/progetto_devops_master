@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('* * * * *') 
+        pollSCM('* * * * *')
     }
 
     environment {
@@ -10,6 +10,7 @@ pipeline {
         IMAGE_TAG = "${env.BUILD_NUMBER}"
         CONTAINER_NAME = 'sentiment-service'
         DOCKER_NETWORK = 'progetto_devops_master_default'
+        NOTIFICATION_EMAIL = 'noemi.soluri@ifm.it'
     }
 
     stages {
@@ -40,14 +41,16 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Avvio del container sentiment-service...'
+                echo 'Avvio e aggiornamento del container sentiment-service...'
                 sh """
-                    # Ferma e rimuove il vecchio container se già in esecuzione
+                    # Ferma e rimuove il container precedente se già presente
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
 
+                    # Avvio del container collegato alla rete di Prometheus e cAdvisor
                     docker run -d \
                       --name ${CONTAINER_NAME} \
+                      --network ${DOCKER_NETWORK} \
                       -p 8000:8000 \
                       --restart unless-stopped \
                       ${IMAGE_NAME}:latest
@@ -58,10 +61,29 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completata! Container ${CONTAINER_NAME} avviato e raggiungibile su porta 8000."
+            echo "Pipeline completata con successo! Container ${CONTAINER_NAME} avviato."
+            
+            // Notifica di successo standard di Jenkins
+            mail to: "${env.NOTIFICATION_EMAIL}",
+                 subject: "Esito OK: Pipeline Jenkins #${env.BUILD_NUMBER} - ${env.JOB_NAME}",
+                 body: """
+La pipeline di CI/CD per il progetto ${env.JOB_NAME} è stata completata con successo!
+
+
+"""
         }
+
         failure {
             echo "Pipeline fallita. Controllare i log dello stage interessato."
+
+            // Notifica di fallimento standard di Jenkins
+            mail to: "${env.NOTIFICATION_EMAIL}",
+                 subject: "Esito KO: Pipeline Jenkins #${env.BUILD_NUMBER} - ${env.JOB_NAME}",
+                 body: """
+ATTENZIONE: La build #${env.BUILD_NUMBER} del progetto ${env.JOB_NAME} è FALLITA!
+
+Controllare immediatamente i log di esecuzione su Jenkins
+"""
         }
     }
 }
