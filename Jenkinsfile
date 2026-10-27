@@ -9,7 +9,7 @@ pipeline {
         IMAGE_NAME = 'sentiment-service'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
         CONTAINER_NAME = 'sentiment-service'
-        DOCKER_NETWORK = 'progetto_devops_master_default'
+        DOCKER_NETWORK = 'progetto_modulo_deploy_default'
         NOTIFICATION_EMAIL = 'noemi.soluri@ifm.it'
     }
 
@@ -59,31 +59,31 @@ pipeline {
         }
     }
 
-    post {
+post {
         success {
             echo "Pipeline completata con successo! Container ${CONTAINER_NAME} avviato."
-            
-            // Notifica di successo standard di Jenkins
-            mail to: "${env.NOTIFICATION_EMAIL}",
-                 subject: "Esito OK: Pipeline Jenkins #${env.BUILD_NUMBER} - ${env.JOB_NAME}",
-                 body: """
-La pipeline di CI/CD per il progetto ${env.JOB_NAME} è stata completata con successo!
-
-
-"""
+            script {
+                try {
+                    mail to: "${env.NOTIFICATION_EMAIL}",
+                         subject: "OK: Pipeline Jenkins #${env.BUILD_NUMBER} - ${env.JOB_NAME}",
+                         body: "Build #${env.BUILD_NUMBER} completata con successo sul container ${CONTAINER_NAME}."
+                } catch (Exception e) {
+                    echo "Notifica e-mail non inviata (server SMTP non configurato): ${e.message}"
+                }
+            }
         }
 
         failure {
             echo "Pipeline fallita. Controllare i log dello stage interessato."
-
-            // Notifica di fallimento standard di Jenkins
-            mail to: "${env.NOTIFICATION_EMAIL}",
-                 subject: "Esito KO: Pipeline Jenkins #${env.BUILD_NUMBER} - ${env.JOB_NAME}",
-                 body: """
-ATTENZIONE: La build #${env.BUILD_NUMBER} del progetto ${env.JOB_NAME} è FALLITA!
-
-Controllare immediatamente i log di esecuzione su Jenkins
-"""
+            script {
+                try {
+                    mail to: "${env.NOTIFICATION_EMAIL}",
+                         subject: "KO: Pipeline Jenkins #${env.BUILD_NUMBER} - ${env.JOB_NAME}",
+                         body: "Build #${env.BUILD_NUMBER} fallita. Verificare la console: ${env.BUILD_URL}console"
+                } catch (Exception e) {
+                    echo "Notifica e-mail non inviata (server SMTP non configurato): ${e.message}"
+                }
+            }
         }
     }
 }
