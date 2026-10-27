@@ -232,27 +232,16 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
+            "fillOpacity": 80,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
             "lineWidth": 1,
-            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -284,16 +273,25 @@
       },
       "id": 4,
       "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
-        }
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
       "targets": [
         {
@@ -310,7 +308,7 @@
         }
       ],
       "title": "Errori di Predizione",
-      "type": "timeseries"
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -465,7 +463,7 @@
             "uid": "e2fbe116-5802-4ba7-badb-11daec45f6c0"
           },
           "editorMode": "code",
-          "expr": "container_memory_usage_bytes{id=\"/\"}",
+          "expr": "process_resident_memory_bytes",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
@@ -568,26 +566,52 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "e2fbe116-5802-4ba7-badb-11daec45f6c0"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum(rate(model_prediction_duration_seconds_bucket[1m])) by (le))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "e2fbe116-5802-4ba7-badb-11daec45f6c0"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.99, sum(rate(model_prediction_duration_seconds_bucket[1m])) by (le))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
         }
       ],
       "title": "Latenza Media Predizione",
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": "5s",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "New dashboard",
   "uid": "d574e505-b02d-4f27-bd18-d9bc720f0145",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }

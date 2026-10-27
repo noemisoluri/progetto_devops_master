@@ -5,17 +5,15 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-LABEL org.opencontainers.image.source="https://github.com/noemisoluri/progetto_devops.git"
-LABEL org.opencontainers.image.description="Sentiment Analysis per recensioni - progetto master ProfessionAI"
+LABEL org.opencontainers.image.description="Sentiment Analysis per recensioni"
 
-# Installazione dipendenze di sistema minime
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
-# 1. Copia e installa prima le dipendenze Python (sfrutta la cache dei layer)
+# Copia e installa prima le dipendenze Python (sfrutta la cache dei layer)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 2. Copia l'applicazione (incluso sentiment_analysis_model.pkl se è dentro la cartella app/)
+# Copia l'applicazione 
 COPY app ./app
 COPY tests ./tests
 

@@ -1,17 +1,6 @@
 
 services:
-  #sentiment-service:
-  # build: .
-  #image: ghcr.io/noemisoluri/sentiment-service:latest
-  #  container_name: sentiment-service
-  #  ports:
-  #    - "8000:8000"
-  #  deploy:
-  #    resources:
-  #      limits:
-  #        cpus: "2.0"
-  #        memory: 2G
-  #  restart: unless-stopped
+
 
   prometheus:
     image: prom/prometheus:v2.50.0

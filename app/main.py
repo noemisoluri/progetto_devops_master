@@ -4,13 +4,7 @@ import pickle
 import time
 from fastapi import FastAPI, HTTPException, Response, status
 from pydantic import BaseModel, Field
-from prometheus_client import (
-    CONTENT_TYPE_LATEST,
-    REGISTRY,
-    Counter,
-    Histogram,
-    generate_latest
-)
+from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY,Counter, Histogram,generate_latest
 import uvicorn
 
 # Configurazione logging
